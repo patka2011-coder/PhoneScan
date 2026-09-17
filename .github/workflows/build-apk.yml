@@ -1,0 +1,69 @@
+name: Build PhoneScan APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+
+      - name: Create project
+        env:
+          F1: H4sIACfrq2oC/6WPvwrCMBjE9zxF6FQXH0BwEFFQrA3VvYTmiJH0+0KSCiK+u38QEQcXb/wdd9wFP1hHlSZt0YOyvAh5V0Tg5DJHh/RCD1lm61GO3qDXJ9D8novaf2AbtfFQz27FMb/Nq7gKgwAyoO7cILEfsuPfAyo2GCfksvmGy9lq09bbVjX1ejHft81C1bvRvw8eIyNzVpGP6PKYdA85lYU6MGHXaSqEo84PBrKY6BAKcQMAlIjHRgEAAA==
+          F2: H4sIACfrq2oC/yvIKU3PzCtWqOZSAILMFAX15PxcvcS8lKL8zBS9xIKCnMzkxJLM/Dx1hbLUomIgQ0HdQs/QUM9QXQEkW6mQlphTnMpVywUAA1C9wUoAAAA=
+          F3: H4sIACfrq2oC/0vMSynKz0zRKy1OdYQwI2xLikpTuRKhEnn5eSFFiXnFmSWZZalBzjmJxcUQBflF6XrpRYkpOal6WWW5iUXpxba6EbkVRgYmFrkKui5pmUCJ1Lzk/JTMvHTb0BA3XQsuAEkxBD1tAAAA
+          F4: H4sIACfrq2oC/6WTwUvDMBTG7/krQhF6WlinTCh4Gh7mYQMHu0pM3rrH0iSkad2Q/u8mXa3TDVGWQ1NevvfLx/eIVXWBuqLvhIaFkqbClIxr6QxKxq1VKLhHo1PSEtLXe7XmJVSWC6DptmaW+x1ndms0VIIHfZQEmEUFK7mjt1PSlSRseK38zOgNFj0prpO75pIm58RkkJaoI3EyHSqeuwJ8f81nsQFXBdrMSKDZz+oimKdJxsZHbEtO/S5ttFGduKtM7QTMwnFw+IoK/YE+8YavjzS2fnxezZeLl+z+h6c/t7QxYAkWtAQtEIaZlFZBCdp30dC0n8GeCeMg7z4Zy6ZsnP4u58JjEzzkw09oG7MsHcZCRcjE8X1vkD7EfO7YJLkETr58dF35cRt1hm6+k/4H6LbJVQyFGxAHoa5z0iC8nQMuphwfTWFMoYCVaoc+97D3IwfCFBqjJI8TimG35AM/Z/20cwMAAA==
+          F5: H4sIACfrq2oC/31Ty07DMBC89ysi32vDDVVJIVRIILUF8fiAxd00Fo4d1pvS/j0OTUKrUnzz7OzseGyn19vKJhukYLzLxKW8EAk67VfGrTPRcDG+EtfTUVqBMwUGTiLdhQm4FXmzykTJXE+UCrrECoLscKl9paD+UIRBdZiYjpK40iZgGNdIlQntzKQrTxxUmIle4JcgZ/ni7jkXiToUKBC4ITzTXQKtvoBQ6ggTRFs7MVAJPxtDGM0zNfirC3VtjQaOM3+AdvU9YK3/ugX90dRd2wnFwjvaTDyV3uGLBnfK4JhRNHnT7wPvLKrXFpULYCQDVs7NumS59LlujdwCneq0AcwsAjFu+ZWgKIzORAE2YBfy/jxRYWN4NyCHGvu84ljj8o4n/iQGTYjukQw6/skmE7UnJjD8dwNu2/oQ7/SIlBrHUWhcGBvPe1wbTJ99FPtmuefIRf6wHG7vSCReIq497f6X6Vlynr8tZ/d3zydiqTpjN1V9uN3bUQePJ/4W1X+X6egbMHttpmEDAAA=
+          F6: H4sIACfrq2oC/7MpSi3OLy1KTi2241IAApvikqLMvHSFvMTcVFulxIKCeBBLyS4gIz8vNTg5Mc9GH6LCjstGH0kvAM20ZyBIAAAA
+          F7: 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
+        run: |
+          python3 - <<'PY'
+          import os,base64,gzip
+          files = {
+              'settings.gradle': os.environ['F1'],
+              'build.gradle': os.environ['F2'],
+              'gradle.properties': os.environ['F3'],
+              'app/build.gradle': os.environ['F4'],
+              'app/src/main/AndroidManifest.xml': os.environ['F5'],
+              'app/src/main/res/values/strings.xml': os.environ['F6'],
+              'app/src/main/java/hu/patka/phonescan/MainActivity.java': os.environ['F7'],
+          }
+          for path,data in files.items():
+              os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
+              with open(path,'wb') as f:
+                  f.write(gzip.decompress(base64.b64decode(data)))
+          PY
+
+      - name: Build APK
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Prepare APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk PhoneScan.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PhoneScan-APK
+          path: PhoneScan.apk
+          retention-days: 30
+          
